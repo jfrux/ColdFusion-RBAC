@@ -26,10 +26,15 @@
 		<cfargument name="datasource" type="string" required="yes">
 		<cfargument name="tableprefix" type="string" required="no" hint="default is 'ac_'" default="ac_">
 		<cfargument name="dbms" type="string" required="yes" hint="database type (mysql, mssql, etc.)">
+		<cfargument name="usertable" type="string" required="no" default="ac_user" hint="If you have an existing user table.">
+		<cfargument name="username_col" type="string" required="no" default="username" hint="If existing users table, what is username field?">
+		<cfargument name="password_col" type="string" required="no" default="password" hint="If existing users table, what is password field?">
 		
 		<cfset variables.dsn = arguments.datasource />
 		<cfset variables.prefix = arguments.tableprefix />
 		<cfset variables.dbtype = arguments.dbms />
+		<cfset variables.un_col = arguments.username_col />
+		<cfset variables.pw_col = arguments.password_col />
 		
 		<cfreturn this>
 	</cffunction>
@@ -59,8 +64,14 @@
 	* </code>
 	*/
 	--->
-	<cffunction AddUser($user='', $password='', $first_name='', $family_name='', $email='')>
-	
+	<cffunction name="AddUser" access="public" output="no" returntype="any">
+		<cfargument name="username" type="string" required="no" />
+		<cfargument name="password" type="string" required="no" />
+		<cfargument name="first_name" type="string" required="no" />
+		<cfargument name="last_name" type="string" required="no" />
+		<cfargument name="email" type="string" required="no" />
+		
+		
 	</cffunction>
 	
 	
@@ -77,15 +88,10 @@
 	* @param array $users an array of usernames
 	* @return boolean
 	*
-	* Example:
-	* <code>
-	* <?php
-	* DeleteUser(array('username','username', '...'))
-	* ?>
-	* </code>
 	*/--->
-	<cffunction DeleteUser($users=array())>
-	
+	<cffunction name="DeleteUser" access="public" output="no" returntype="any">
+		<cfargument name="users" type="array" required="yes" />
+		
 	</cffunction>
 	
 	
@@ -97,7 +103,8 @@
 	* the functions assigned_users and assigned_permissions are updated. Initially,
 	* no user or permission is assigned to the new role. 
 	*
-	* @param string $role role name
+	* @param string $name // role name
+	* @param string $description // role description
 	* @return boolean
 	*
 	* Example:
@@ -107,8 +114,11 @@
 	* ?>
 	* </code>
 	*/--->
-	<cffunction AddRole($role='')>
-	
+	<cffunction name="AddRole" access="public" output="no" returntype="any">
+		<cfargument name="name" type="string" required="yes" />
+		<cfargument name="description" type="string" required="no" default="" />
+
+		
 	</cffunction>
 	
 	
@@ -131,7 +141,8 @@
 	* ?>
 	* </code>
 	*/--->
-	<cffunction DeleteRole($roles=array())>
+	<cffunction name="DeleteRole" access="public" output="no" returntype="any">
+		<cfargument name="roles" type="array" required="yes" />
 	
 	</cffunction>
 	
@@ -157,7 +168,9 @@
 	* ?>
 	* </code>
 	*/--->
-	<cffunction AssignUser($user='', $roles=array())>
+	<cffunction name="AssignUser" access="public" output="no" returntype="any">
+		<cfargument name="user" type="numeric" required="yes" />
+		<cfargument name="roles" type="array" required="yes" />
 	
 	</cffunction>
 	
@@ -182,12 +195,12 @@
 	* ?>
 	* </code>
 	*/--->
-	<cffunction DeassignUser($user='', $roles=array())>
+	<cffunction name="DeassignUser" access="public" output="no" returntype="any">
+		<cfargument name="user" type="numeric" required="yes" />
+		<cfargument name="roles" type="array" required="yes" />
 	
 	</cffunction>
-	
-	
-	
+
 	<!---
 	/**
 	* This command grants a role the permission to perform an operation on an
@@ -210,7 +223,9 @@
 	* ?>
 	* </code>
 	*/--->
-	<cffunction GrantPermission($permission=array(), $role='')>
+	<cffunction name="GrantPermission" access="public" output="no" returntype="any">
+		<cfargument name="permissions" type="array" required="yes" />
+		<cfargument name="role" type="numeric" required="yes" />
 	
 	</cffunction>
 	
@@ -235,8 +250,10 @@
 	* ?>
 	* </code>
 	*/--->
-	<cffunction RevokePermission($permission=array(), $role='')>
-	
+	<cffunction name="RevokePermission" access="public" output="no" returntype="any">
+		<cfargument name="permissions" type="array" required="yes" />
+		<cfargument name="role" type="numeric" required="no" />
+
 	</cffunction>
 	
 	
@@ -254,7 +271,7 @@
 	*   that represent those roles.
 	* This function calls the {@link DeleteSession()} function to remove any expired sessions.
 	*
-	* @param string $user username
+	* @param numeric $user username
 	* @param string $session session identifier
 	* @return boolean
 	*
@@ -265,8 +282,10 @@
 	* ?>
 	* </code>
 	*/--->
-	<cffunction CreateSession($user='', $session='')>
-	
+	<cffunction name="CreateSession" access="public" output="no" returntype="any">
+		<cfargument name="user" type="numeric" required="yes" />
+		<cfargument name="session" type="string" required="yes" />
+
 	</cffunction>
 	
 	
@@ -288,7 +307,8 @@
 	* ?>
 	* </code>
 	*/--->
-	<cffunction DeleteSession($sessions)>
+	<cffunction name="DeleteSession" access="public" output="no" returntype="any">
+		<cfargument name="sessions" type="array" required="yes" />
 	
 	</cffunction>
 	
@@ -318,7 +338,10 @@
 	* ?>
 	* </code>
 	*/--->
-	<cffunction AddActiveRole($user='', $session='', $roles=array())>
+	<cffunction name="AddActiveRole" access="public" output="no" returntype="any">
+		<cfargument name="user" type="numeric" required="yes" />
+		<cfargument name="session" type="string" required="yes" />
+		<cfargument name="roles" type="array" required="yes" />
 	
 	</cffunction>
 	
@@ -345,7 +368,10 @@
 	* ?>
 	* </code>
 	*/--->
-	<cffunction DropActiveRole($user='', $session='', $roles=array())>
+	<cffunction name="DropActiveRole" access="public" output="no" returntype="any">
+		<cfargument name="user" type="numeric" required="yes" />
+		<cfargument name="session" type="string" required="yes" />
+		<cfargument name="roles" type="array" required="yes" />
 	
 	</cffunction>
 	
@@ -373,8 +399,12 @@
 	* ?>
 	* </code>
 	*/--->
-	<cffunction CheckAccess($session='', $object='', $operation='')>
-	
+	<cffunction name="CheckAccess" access="public" output="no" returntype="any">
+		<cfargument name="session" type="string" required="yes" />
+		<cfargument name="object" type="string" required="yes" />
+		<cfargument name="operation" type="string" required="yes" />
+		
+		
 	</cffunction>
 	
 	
@@ -393,8 +423,10 @@
 	* ?>
 	* </code>
 	*/--->
-	<cffunction AssignedUsers($role='')>
-	
+	<cffunction name="AssignedUsers" access="public" output="no" returntype="any">
+		<cfargument name="role" type="numeric" required="yes" />
+		
+		
 	</cffunction>
 	
 	
@@ -413,7 +445,11 @@
 	* ?>
 	* </code>
 	*/--->
-	<cffunction AssignedRoles($user='')>
+	<cffunction name="AssignedRoles" access="public" output="no" returntype="any">
+		<cfargument name="user" type="numeric" required="yes" />
+	
+	
+	<!---($user='')>
 		/* Filter input */
 		  $user = filter_var($user, FILTER_SANITIZE_STRING);
 		  /* Select all roles that are associated with the user */
@@ -424,7 +460,7 @@
 		WHERE user.username = ?';
 		/* Execute the query and return the result set */
 		return QueryEngine($sql, array(&$user), 's', 0);
-	}
+	}--->
 	</cffunction>
 
 	<!---
@@ -443,7 +479,10 @@
 	* ?>
 	* </code>
 	*/ --->
-	<cffunction RolePermissions($role='')>
+	<cffunction name="RolePermissions" access="public" output="no" returntype="any">
+		<cfargument name="role" type="numeric" required="yes" />
+	
+	<!---($role='')>
 		/* Filter input */
 		  $role = filter_var($role, FILTER_SANITIZE_STRING);
 		  /* Select all permissions that are associated with the role */
@@ -455,7 +494,7 @@
 		INNER JOIN role USING (role_id)
 		WHERE role.name = ?';
 		return QueryEngine($sql, array(&$role), 's', 0);
-	}
+	}--->
 	</cffunction>
 	
 	<!---
@@ -474,7 +513,10 @@
 	* ?>
 	* </code>
 	*/--->
-	<cffunction UserPermissions($user='')>
+	<cffunction name="UserPermissions" access="public" output="no" returntype="any">
+		<cfargument name="user" type="numeric" required="yes" />
+		
+		<!---($user='')>
 		/* Filter input */
 		$user = filter_var($user, FILTER_SANITIZE_STRING);
 		/* Select all permissions that are associated with a given user */
@@ -485,7 +527,7 @@
 		INNER JOIN user_role USING (role_id)
 		INNER JOIN user USING (user_id)
 		WHERE user.username = ?';
-		return QueryEngine($sql, array(&$user), 's', 0);
+		return QueryEngine($sql, array(&$user), 's', 0);--->
 	</cffunction>
 	
 	
@@ -505,7 +547,10 @@
 	* ?>
 	* </code>
 	*/--->
-	<cffunction SessionRoles($session='')>
+	<cffunction name="SessionRoles" access="public" output="no" returntype="any">
+		<cfargument name="session" type="string" required="yes" />
+		
+		<!---($session='')>
 		/* Filter input */
 		$session = filter_var($session, FILTER_SANITIZE_STRING, FILTER_FLAG_ENCODE_HIGH|FILTER_FLAG_ENCODE_LOW);
 		/* Select all roles that are associated with the active session */
@@ -514,7 +559,7 @@
 		INNER JOIN session_role USING (role_id)
 		INNER JOIN session USING (session_id)
 		WHERE session.name = ?';
-		return QueryEngine($sql, array(&$session), 's', 0);
+		return QueryEngine($sql, array(&$session), 's', 0);--->
 	</cffunction>
 	
 	
@@ -534,7 +579,10 @@
 	* ?>
 	* </code>
 	*/--->
-	<cffunction SessionPermissions($session='')>
+	<cffunction name="SessionPermissions" access="public" output="no" returntype="any">
+		<cfargument name="session" type="string" required="yes" />
+		
+		<!---($session='')>
 		/* Filter input */
 		$session = filter_var($session, FILTER_SANITIZE_STRING, FILTER_FLAG_ENCODE_HIGH|FILTER_FLAG_ENCODE_LOW);
 		/* Select all permissions that are associated with the active session */
@@ -547,6 +595,7 @@
 		INNER JOIN session USING (session_id)
 		WHERE session.name = ?';
 		return QueryEngine($sql, array(&$session), 's', 0);
+		--->	
 	</cffunction>
 
 
@@ -591,7 +640,11 @@
 	* ?>
 	* </code>
 	*/--->
-	<cffunction AddPermission($permission='', $object='', $operation='')>
+	<cffunction name="AddPermission" access="public" output="no" returntype="any">
+		<cfargument name="permission" type="string" required="yes" />
+		<cfargument name="object" type="numeric" required="yes" />
+		<cfargument name="operation" type="numeric" required="yes" />
+		
 	
 	</cffunction>
 	
@@ -610,8 +663,10 @@
 	* ?>
 	* </code>
 	*/--->
-	<cffunction DeletePermission($permissions=array())>
-	
+	<cffunction name="DeletePermission" access="public" output="no" returntype="any">
+		<cfargument name="permissions" type="array" required="no" />
+		
+		
 	</cffunction>
 		
 	
@@ -631,8 +686,11 @@
 	* ?>
 	* </code>
 	*/--->
-	<cffunction AddObject($object='', $locked=0)>
-	
+	<cffunction name="AddObject" access="public" output="no" returntype="any">
+		<cfargument name="object" type="numeric" required="yes" />
+		<cfargument name="locked" type="boolean" required="no" default="false" />
+		
+		
 	</cffunction>
 	   
 	
@@ -652,8 +710,10 @@
 	* ?>
 	* </code>
 	*/--->
-	<cffunction DeleteObject($objects=array()) {
-	
+	<cffunction name="DeleteObject" access="public" output="no" returntype="any">
+		<cfargument name="objects" type="array" required="yes" hint="array of object id's" />
+		
+		
 	</cffunction>
 	
 	<!---
@@ -671,8 +731,13 @@
 	* AddOperation('operation', '0000 - 1111', '0 or 1');
 	* ?>* </code>
 	*/--->
-	<cffunction AddOperation($operation='', $mask='', $locked=0)>
-	
+	<cffunction name="AddOperation" access="public" output="no" returntype="any">
+		<cfargument name="name" type="string" required="yes" />
+		<cfargument name="description" type="string" required="no" default="" />
+		<cfargument name="mask" type="string" required="no" default="0000" hint="0000 - 1111 representing create,read,update,delete" />
+		<cfargument name="locked" type="boolean" required="no" default="0" />
+		
+		
 	</cffunction>
 	
 	<!---
@@ -689,59 +754,66 @@
 	* ?>
 	* </code>
 	*/--->
-	<cffunction DeleteOperation($operations=array())>
-		/* Filter external variables */
-		$operations = filter_var($operations, FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
-		/* initialize variables */
-		$sql = $key = $val = $query_success = $results = $operation = 
-		$operation_locked = $operation_without_locked = '';
-		/* Loop through the $objects array, retrieve all object_ids and delete all 
-		associated objects */
-		if (!empty($operations)) {
-			/* Start transaction */
-			  $query_success = TRUE;
-			QueryEngine('', '', '', 1);
-			/* Loop through the $operations array and deliver individual id's 
-			to the SQL DELETE instruction */
-			while (list ($key, $val) = each ($operations)) {
-				$operation = (string) $val;
-				$sql = 'SELECT name AS operation_name 
-				FROM operation 
-				WHERE name = ?';
-				$results = QueryEngine($sql, array(&$operation), 's', 0);
-				if (!empty($results)) {
-					$operation_without_locked = (string) $results[0]['operation_name'];
-				}
-				$sql = 'SELECT name AS operation_name
-				FROM operation 
-				WHERE name = ? AND locked = 0';
-				$results = QueryEngine($sql, array(&$operation), 's', 0);
-				if (!empty($results)) {
-					$operation_locked = (string) $results[0]['operation_name'];
-				}
-				/* If both SELECTS retrieve the same result the object is not
-				locked and the DELETE can be executed */
-				if (!empty($operation_without_locked) && !empty($operation_locked) && ($operation_without_locked == $operation_locked)) {
-					$sql = 'DELETE FROM operation WHERE name = ?';
+	<cffunction name="DeleteOperation" access="public" output="no" returntype="any">
+		<cfargument name="operations" type="array" required="yes" hint="an array of operation id's" />
+		
+		<!---
+		PHP CODE:
+		($operations=array())>
+			/* Filter external variables */
+			$operations = filter_var($operations, FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
+			/* initialize variables */
+			$sql = $key = $val = $query_success = $results = $operation = 
+			$operation_locked = $operation_without_locked = '';
+			/* Loop through the $objects array, retrieve all object_ids and delete all 
+			associated objects */
+			if (!empty($operations)) {
+				/* Start transaction */
+				  $query_success = TRUE;
+				QueryEngine('', '', '', 1);
+				/* Loop through the $operations array and deliver individual id's 
+				to the SQL DELETE instruction */
+				while (list ($key, $val) = each ($operations)) {
+					$operation = (string) $val;
+					$sql = 'SELECT name AS operation_name 
+					FROM operation 
+					WHERE name = ?';
 					$results = QueryEngine($sql, array(&$operation), 's', 0);
 					if (!empty($results)) {
+						$operation_without_locked = (string) $results[0]['operation_name'];
+					}
+					$sql = 'SELECT name AS operation_name
+					FROM operation 
+					WHERE name = ? AND locked = 0';
+					$results = QueryEngine($sql, array(&$operation), 's', 0);
+					if (!empty($results)) {
+						$operation_locked = (string) $results[0]['operation_name'];
+					}
+					/* If both SELECTS retrieve the same result the object is not
+					locked and the DELETE can be executed */
+					if (!empty($operation_without_locked) && !empty($operation_locked) && ($operation_without_locked == $operation_locked)) {
+						$sql = 'DELETE FROM operation WHERE name = ?';
+						$results = QueryEngine($sql, array(&$operation), 's', 0);
+						if (!empty($results)) {
+							$query_success = FALSE;
+						}
+					} else {
 						$query_success = FALSE;
 					}
+				}
+				/* Commit or rollback transaction based on the value of $query_success */
+				if ($query_success) {
+					/* Commit transaction, return true */
+					QueryEngine('', '', '', 2);
+					return TRUE;
 				} else {
-					$query_success = FALSE;
+					/* Rollback transaction, return false */
+					QueryEngine('', '', '', 3); 
+					return FALSE;
 				}
 			}
-			/* Commit or rollback transaction based on the value of $query_success */
-			if ($query_success) {
-				/* Commit transaction, return true */
-				QueryEngine('', '', '', 2);
-				return TRUE;
-			} else {
-				/* Rollback transaction, return false */
-				QueryEngine('', '', '', 3); 
-				return FALSE;
-			}
-		}
-		return FALSE;
+			return FALSE;
+			
+			--->
 	</cffunction>
 </cfcomponent>

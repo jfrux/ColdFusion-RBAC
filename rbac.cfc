@@ -408,354 +408,348 @@
 	
 	<!---
 	/**
-* This function returns the set of roles assigned to a given user. 
-* The function is valid if and only if the user is a member of the USERS data set.  
-*
-* @param string $user username
-* @return array
-*
-* Example:
-* <code>
-* <?php
-* AssignedRoles('username');
-* ?>
-* </code>
-*/--->
-<cffunction AssignedRoles($user='')>
-    /* Filter input */
-	  $user = filter_var($user, FILTER_SANITIZE_STRING);
-	  /* Select all roles that are associated with the user */
-    $sql = 'SELECT DISTINCT role.name AS Role
-    FROM user
-    INNER JOIN user_role USING (user_id)
-    INNER JOIN role USING (role_id)
-    WHERE user.username = ?';
-    /* Execute the query and return the result set */
-    return QueryEngine($sql, array(&$user), 's', 0);
-}
-</cffunction>
+	* This function returns the set of roles assigned to a given user. 
+	* The function is valid if and only if the user is a member of the USERS data set.  
+	*
+	* @param string $user username
+	* @return array
+	*
+	* Example:
+	* <code>
+	* <?php
+	* AssignedRoles('username');
+	* ?>
+	* </code>
+	*/--->
+	<cffunction AssignedRoles($user='')>
+		/* Filter input */
+		  $user = filter_var($user, FILTER_SANITIZE_STRING);
+		  /* Select all roles that are associated with the user */
+		$sql = 'SELECT DISTINCT role.name AS Role
+		FROM user
+		INNER JOIN user_role USING (user_id)
+		INNER JOIN role USING (role_id)
+		WHERE user.username = ?';
+		/* Execute the query and return the result set */
+		return QueryEngine($sql, array(&$user), 's', 0);
+	}
+	</cffunction>
 
-<!---
-/**
-* This function returns the set of permissions (op, obj) granted to a given 
-* role. The function is valid if and only if the role is a member of the 
-* ROLES data set.
-*
-* @param string $role role name
-* @return array
-*
-* Example:
-* <code>
-* <?php
-* RolePermissions('rolename');
-* ?>
-* </code>
-*/ --->
-<cffunction RolePermissions($role='')>
-    /* Filter input */
-	  $role = filter_var($role, FILTER_SANITIZE_STRING);
-	  /* Select all permissions that are associated with the role */
-    $sql = 'SELECT DISTINCT permission.name AS Permission, object.name AS Object, operation.name AS Operation
-    FROM permission
-    INNER JOIN object USING (object_id)
-    INNER JOIN operation USING (operation_id)
-    INNER JOIN role_permission USING (permission_id)
-    INNER JOIN role USING (role_id)
-    WHERE role.name = ?';
-    return QueryEngine($sql, array(&$role), 's', 0);
-}
-</cffunction>
-
-<!---
-/**
-* This function returns the permissions a given user gets through his/her 
-* assigned roles. The function is valid if and only if the user is a member of 
-* the USERS data set.
-*
-* @param string $user username
-* @return array
-*
-* Example:
-* <code>
-* <?php
-* UserPermissions('username');
-* ?>
-* </code>
-*/--->
-<cffunction UserPermissions($user='')>
-    /* Filter input */
-    $user = filter_var($user, FILTER_SANITIZE_STRING);
-    /* Select all permissions that are associated with a given user */
-    $sql = 'SELECT DISTINCT role.name AS Role, permission.name AS Permission
-    FROM permission
-    INNER JOIN role_permission USING (permission_id)
-    INNER JOIN role USING (role_id)
-    INNER JOIN user_role USING (role_id)
-    INNER JOIN user USING (user_id)
-    WHERE user.username = ?';
-    return QueryEngine($sql, array(&$user), 's', 0);
-</cffunction>
-
-
-<!---
-/**
-* This function returns the active roles associated with a session. The function
-* is valid if and only if the session identifier is a member of the SESSIONS 
-* data set. 
-*
-* @param string $session session identifier
-* @return array
-*
-* Example:
-* <code>
-* <?php
-* SessionRoles('session');
-* ?>
-* </code>
-*/--->
-<cffunction SessionRoles($session='')>
-    /* Filter input */
-    $session = filter_var($session, FILTER_SANITIZE_STRING, FILTER_FLAG_ENCODE_HIGH|FILTER_FLAG_ENCODE_LOW);
-    /* Select all roles that are associated with the active session */
-    $sql = 'SELECT DISTINCT role.name AS Role
-    FROM role
-    INNER JOIN session_role USING (role_id)
-    INNER JOIN session USING (session_id)
-    WHERE session.name = ?';
-    return QueryEngine($sql, array(&$session), 's', 0);
-</cffunction>
-
-
-<!---
-/**
-* This function returns the permissions of the session, i.e., the permissions 
-* assigned to its active roles. The function is valid if and only if the session
-* identifier is a member of the SESSIONS data set. 
-*
-* @param string $session session identifier
-* @return array
-*
-* Example:
-* <code>
-* <?php
-* SessionPermissions('session');
-* ?>
-* </code>
-*/--->
-<cffunction SessionPermissions($session='')>
-    /* Filter input */
-    $session = filter_var($session, FILTER_SANITIZE_STRING, FILTER_FLAG_ENCODE_HIGH|FILTER_FLAG_ENCODE_LOW);
-    /* Select all permissions that are associated with the active session */
-    $sql = 'SELECT DISTINCT permission.name AS Permission, object.name AS Object, operation.name AS Operation
-    FROM permission
-    INNER JOIN object USING (object_id)
-    INNER JOIN operation USING (operation_id)
-    INNER JOIN role_permission USING (permission_id)
-    INNER JOIN session_role USING (role_id)
-    INNER JOIN session USING (session_id)
-    WHERE session.name = ?';
-    return QueryEngine($sql, array(&$session), 's', 0);
-</cffunction>
-
-
-<!---
-NON STANDARD API CALLS
-
-These API calls are not part of the NIST RBAC standard as the standard states
-the following:
-"Creation and Maintenance of Element Sets: The basic element sets in Core 
-RBAC are USERS, ROLES, OPS and OBS. 
-	Of these element sets, OPS and OBS are 
-	considered predefined by the underlying information system for which RBAC is 
-	deployed. For example, a banking system may have predefined transactions 
-	(OPS) for savings deposit and others, and predefined data sets (OBS) such as
-  	savings files, address files, and other necessary data.  
- 
-For situations in which no predefined element sets for OPS and OBS are
-available we have added 6 additional, non-standard, functions:
-	- AddPermission: this will add a permission with create, read, update and delete
-	  					aspects and the object to which the permission belongs
-	- DeletePermission: this will remove a permission
-	- AddObject: this will add an object as the basis for a permission
-	- DeleteObject: this will delete an object (and it's associated permissions)
-	- AddOperation: this will add an operation as the basis for a permission
-	- DeleteOperation: this will delete an operation (and it's associated permissions)
---->
+	<!---
+	/**
+	* This function returns the set of permissions (op, obj) granted to a given 
+	* role. The function is valid if and only if the role is a member of the 
+	* ROLES data set.
+	*
+	* @param string $role role name
+	* @return array
+	*
+	* Example:
+	* <code>
+	* <?php
+	* RolePermissions('rolename');
+	* ?>
+	* </code>
+	*/ --->
+	<cffunction RolePermissions($role='')>
+		/* Filter input */
+		  $role = filter_var($role, FILTER_SANITIZE_STRING);
+		  /* Select all permissions that are associated with the role */
+		$sql = 'SELECT DISTINCT permission.name AS Permission, object.name AS Object, operation.name AS Operation
+		FROM permission
+		INNER JOIN object USING (object_id)
+		INNER JOIN operation USING (operation_id)
+		INNER JOIN role_permission USING (permission_id)
+		INNER JOIN role USING (role_id)
+		WHERE role.name = ?';
+		return QueryEngine($sql, array(&$role), 's', 0);
+	}
+	</cffunction>
+	
+	<!---
+	/**
+	* This function returns the permissions a given user gets through his/her 
+	* assigned roles. The function is valid if and only if the user is a member of 
+	* the USERS data set.
+	*
+	* @param string $user username
+	* @return array
+	*
+	* Example:
+	* <code>
+	* <?php
+	* UserPermissions('username');
+	* ?>
+	* </code>
+	*/--->
+	<cffunction UserPermissions($user='')>
+		/* Filter input */
+		$user = filter_var($user, FILTER_SANITIZE_STRING);
+		/* Select all permissions that are associated with a given user */
+		$sql = 'SELECT DISTINCT role.name AS Role, permission.name AS Permission
+		FROM permission
+		INNER JOIN role_permission USING (permission_id)
+		INNER JOIN role USING (role_id)
+		INNER JOIN user_role USING (role_id)
+		INNER JOIN user USING (user_id)
+		WHERE user.username = ?';
+		return QueryEngine($sql, array(&$user), 's', 0);
+	</cffunction>
+	
+	
+	<!---
+	/**
+	* This function returns the active roles associated with a session. The function
+	* is valid if and only if the session identifier is a member of the SESSIONS 
+	* data set. 
+	*
+	* @param string $session session identifier
+	* @return array
+	*
+	* Example:
+	* <code>
+	* <?php
+	* SessionRoles('session');
+	* ?>
+	* </code>
+	*/--->
+	<cffunction SessionRoles($session='')>
+		/* Filter input */
+		$session = filter_var($session, FILTER_SANITIZE_STRING, FILTER_FLAG_ENCODE_HIGH|FILTER_FLAG_ENCODE_LOW);
+		/* Select all roles that are associated with the active session */
+		$sql = 'SELECT DISTINCT role.name AS Role
+		FROM role
+		INNER JOIN session_role USING (role_id)
+		INNER JOIN session USING (session_id)
+		WHERE session.name = ?';
+		return QueryEngine($sql, array(&$session), 's', 0);
+	</cffunction>
+	
+	
+	<!---
+	/**
+	* This function returns the permissions of the session, i.e., the permissions 
+	* assigned to its active roles. The function is valid if and only if the session
+	* identifier is a member of the SESSIONS data set. 
+	*
+	* @param string $session session identifier
+	* @return array
+	*
+	* Example:
+	* <code>
+	* <?php
+	* SessionPermissions('session');
+	* ?>
+	* </code>
+	*/--->
+	<cffunction SessionPermissions($session='')>
+		/* Filter input */
+		$session = filter_var($session, FILTER_SANITIZE_STRING, FILTER_FLAG_ENCODE_HIGH|FILTER_FLAG_ENCODE_LOW);
+		/* Select all permissions that are associated with the active session */
+		$sql = 'SELECT DISTINCT permission.name AS Permission, object.name AS Object, operation.name AS Operation
+		FROM permission
+		INNER JOIN object USING (object_id)
+		INNER JOIN operation USING (operation_id)
+		INNER JOIN role_permission USING (permission_id)
+		INNER JOIN session_role USING (role_id)
+		INNER JOIN session USING (session_id)
+		WHERE session.name = ?';
+		return QueryEngine($sql, array(&$session), 's', 0);
+	</cffunction>
 
 
-<!---
-/**
-* This command creates a new permission. 
-*
-* @param string $permission permission name
-* @param string $object object name
-* @param string $operation operation name
-* @return boolean
-*
-* Example:
-* <code>
-* <?php
-* AddPermission('permission', 'object', 'operation');
-* ?>
-* </code>
-*/
-function AddPermission($permission='', $object='', $operation='') {
---->
-
-<!---
-/**
-* Delete a permission
-*
-* @param array $permissions array of permission names
-* @return boolean
-*
-* Example:
-* <code>
-* <?php
-* DeletePermission(array('permission', '...'));
-* ?>
-* </code>
-*/
-function DeletePermission($permissions=array()) {
-    
---->
-
-<!---
-/**
-* Add an Object to the database that is the subject of a permission
-*
-* @param string $object object name
-* @param boolean $locked is the object locked or not
-* @return boolean
-*
-* Example:
-* <code>
-* <?php
-* AddObject('object', '0 or 1');
-* ?>
-* </code>
-*/
-function AddObject($object='', $locked=0) {
-   
---->
+	<!---
+	NON STANDARD API CALLS
+	
+	These API calls are not part of the NIST RBAC standard as the standard states
+	the following:
+	"Creation and Maintenance of Element Sets: The basic element sets in Core 
+	RBAC are USERS, ROLES, OPS and OBS. 
+		Of these element sets, OPS and OBS are 
+		considered predefined by the underlying information system for which RBAC is 
+		deployed. For example, a banking system may have predefined transactions 
+		(OPS) for savings deposit and others, and predefined data sets (OBS) such as
+		savings files, address files, and other necessary data.  
+	 
+	For situations in which no predefined element sets for OPS and OBS are
+	available we have added 6 additional, non-standard, functions:
+		- AddPermission: this will add a permission with create, read, update and delete
+							aspects and the object to which the permission belongs
+		- DeletePermission: this will remove a permission
+		- AddObject: this will add an object as the basis for a permission
+		- DeleteObject: this will delete an object (and it's associated permissions)
+		- AddOperation: this will add an operation as the basis for a permission
+		- DeleteOperation: this will delete an operation (and it's associated permissions)
+	--->
 
 
-<!---
-/**
-* Delete an Object
-*
-* @param array $objects array of object names
-* @return boolean
-*
-* Example:
-* <code>
-* <?php
-* DeleteObject(array('object', '...'));
-* ?>
-* </code>
-*/
-function DeleteObject($objects=array()) {
-    
---->
-
-
-<!---
-/**
-* Add an Operation to the database that is the subject of a permission
-*
-* @param string $operation operation name
-* @param string $mask a bitmask to determine create, read, update and delete settings
-* @param boolean $locked is the operation locked or not
-* @return boolean
-*
-* Example:
-* <code>
-* <?php
-* AddOperation('operation', '0000 - 1111', '0 or 1');
-* ?>* </code>
-*/
-function AddOperation($operation='', $mask='', $locked=0) {
-    
---->
-
-
-<!---
-/**
-* Delete an Operation
-*
-* @param array $operations array of operation names
-* @return boolean
-*
-* Example:
-* <code>
-* <?php
-* DeleteOperation(array('operation','...'));
-* ?>
-* </code>
-*/
-function DeleteOperation($operations=array()) {
-    /* Filter external variables */
-    $operations = filter_var($operations, FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
-    /* initialize variables */
-    $sql = $key = $val = $query_success = $results = $operation = 
-    $operation_locked = $operation_without_locked = '';
-    /* Loop through the $objects array, retrieve all object_ids and delete all 
-    associated objects */
-    if (!empty($operations)) {
-        /* Start transaction */
-    	  $query_success = TRUE;
-        QueryEngine('', '', '', 1);
-        /* Loop through the $operations array and deliver individual id's 
-        to the SQL DELETE instruction */
-        while (list ($key, $val) = each ($operations)) {
-            $operation = (string) $val;
-            $sql = 'SELECT name AS operation_name 
-            FROM operation 
-            WHERE name = ?';
-            $results = QueryEngine($sql, array(&$operation), 's', 0);
-            if (!empty($results)) {
-                $operation_without_locked = (string) $results[0]['operation_name'];
-            }
-            $sql = 'SELECT name AS operation_name
-            FROM operation 
-            WHERE name = ? AND locked = 0';
-            $results = QueryEngine($sql, array(&$operation), 's', 0);
-            if (!empty($results)) {
-                $operation_locked = (string) $results[0]['operation_name'];
-            }
-            /* If both SELECTS retrieve the same result the object is not
-            locked and the DELETE can be executed */
-            if (!empty($operation_without_locked) && !empty($operation_locked) && ($operation_without_locked == $operation_locked)) {
-                $sql = 'DELETE FROM operation WHERE name = ?';
-                $results = QueryEngine($sql, array(&$operation), 's', 0);
-                if (!empty($results)) {
-                    $query_success = FALSE;
-                }
-            } else {
-                $query_success = FALSE;
-            }
-        }
-        /* Commit or rollback transaction based on the value of $query_success */
-        if ($query_success) {
-            /* Commit transaction, return true */
-            QueryEngine('', '', '', 2);
-            return TRUE;
-        } else {
-            /* Rollback transaction, return false */
-            QueryEngine('', '', '', 3); 
-            return FALSE;
-        }
-    }
-    return FALSE;
-}
---->
-
-
-<!---
-/**
-*
-* END OF NON STANDARD API CALLS
-*
-*/
---->
+	<!---
+	/**
+	* This command creates a new permission. 
+	*
+	* @param string $permission permission name
+	* @param string $object object name
+	* @param string $operation operation name
+	* @return boolean
+	*
+	* Example:
+	* <code>
+	* <?php
+	* AddPermission('permission', 'object', 'operation');
+	* ?>
+	* </code>
+	*/--->
+	<cffunction AddPermission($permission='', $object='', $operation='')>
+	
+	</cffunction>
+	
+	
+	<!---
+	/**
+	* Delete a permission
+	*
+	* @param array $permissions array of permission names
+	* @return boolean
+	*
+	* Example:
+	* <code>
+	* <?php
+	* DeletePermission(array('permission', '...'));
+	* ?>
+	* </code>
+	*/--->
+	<cffunction DeletePermission($permissions=array())>
+	
+	</cffunction>
+		
+	
+	
+	<!---
+	/**
+	* Add an Object to the database that is the subject of a permission
+	*
+	* @param string $object object name
+	* @param boolean $locked is the object locked or not
+	* @return boolean
+	*
+	* Example:
+	* <code>
+	* <?php
+	* AddObject('object', '0 or 1');
+	* ?>
+	* </code>
+	*/--->
+	<cffunction AddObject($object='', $locked=0)>
+	
+	</cffunction>
+	   
+	
+	
+	
+	<!---
+	/**
+	* Delete an Object
+	*
+	* @param array $objects array of object names
+	* @return boolean
+	*
+	* Example:
+	* <code>
+	* <?php
+	* DeleteObject(array('object', '...'));
+	* ?>
+	* </code>
+	*/--->
+	<cffunction DeleteObject($objects=array()) {
+	
+	</cffunction>
+	
+	<!---
+	/**
+	* Add an Operation to the database that is the subject of a permission
+	*
+	* @param string $operation operation name
+	* @param string $mask a bitmask to determine create, read, update and delete settings
+	* @param boolean $locked is the operation locked or not
+	* @return boolean
+	*
+	* Example:
+	* <code>
+	* <?php
+	* AddOperation('operation', '0000 - 1111', '0 or 1');
+	* ?>* </code>
+	*/--->
+	<cffunction AddOperation($operation='', $mask='', $locked=0)>
+	
+	</cffunction>
+	
+	<!---
+	/**
+	* Delete an Operation
+	*
+	* @param array $operations array of operation names
+	* @return boolean
+	*
+	* Example:
+	* <code>
+	* <?php
+	* DeleteOperation(array('operation','...'));
+	* ?>
+	* </code>
+	*/--->
+	<cffunction DeleteOperation($operations=array())>
+		/* Filter external variables */
+		$operations = filter_var($operations, FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
+		/* initialize variables */
+		$sql = $key = $val = $query_success = $results = $operation = 
+		$operation_locked = $operation_without_locked = '';
+		/* Loop through the $objects array, retrieve all object_ids and delete all 
+		associated objects */
+		if (!empty($operations)) {
+			/* Start transaction */
+			  $query_success = TRUE;
+			QueryEngine('', '', '', 1);
+			/* Loop through the $operations array and deliver individual id's 
+			to the SQL DELETE instruction */
+			while (list ($key, $val) = each ($operations)) {
+				$operation = (string) $val;
+				$sql = 'SELECT name AS operation_name 
+				FROM operation 
+				WHERE name = ?';
+				$results = QueryEngine($sql, array(&$operation), 's', 0);
+				if (!empty($results)) {
+					$operation_without_locked = (string) $results[0]['operation_name'];
+				}
+				$sql = 'SELECT name AS operation_name
+				FROM operation 
+				WHERE name = ? AND locked = 0';
+				$results = QueryEngine($sql, array(&$operation), 's', 0);
+				if (!empty($results)) {
+					$operation_locked = (string) $results[0]['operation_name'];
+				}
+				/* If both SELECTS retrieve the same result the object is not
+				locked and the DELETE can be executed */
+				if (!empty($operation_without_locked) && !empty($operation_locked) && ($operation_without_locked == $operation_locked)) {
+					$sql = 'DELETE FROM operation WHERE name = ?';
+					$results = QueryEngine($sql, array(&$operation), 's', 0);
+					if (!empty($results)) {
+						$query_success = FALSE;
+					}
+				} else {
+					$query_success = FALSE;
+				}
+			}
+			/* Commit or rollback transaction based on the value of $query_success */
+			if ($query_success) {
+				/* Commit transaction, return true */
+				QueryEngine('', '', '', 2);
+				return TRUE;
+			} else {
+				/* Rollback transaction, return false */
+				QueryEngine('', '', '', 3); 
+				return FALSE;
+			}
+		}
+		return FALSE;
+	</cffunction>
 </cfcomponent>

@@ -66,9 +66,11 @@
 	* ?>
 	* </code>
 	*/
-	
-	function AddUser($user='', $password='', $first_name='', $family_name='', $email='') {
 	--->
+	<cffunction AddUser($user='', $password='', $first_name='', $family_name='', $email='')>
+	
+	</cffunction>
+	
 	
 	
 	<!---
@@ -89,9 +91,11 @@
 	* DeleteUser(array('username','username', '...'))
 	* ?>
 	* </code>
-	*/
-	function DeleteUser($users=array()) {
-	--->
+	*/--->
+	<cffunction DeleteUser($users=array())>
+	
+	</cffunction>
+	
 	
 	<!---
 	/**
@@ -110,9 +114,11 @@
 	* AddRole('role');
 	* ?>
 	* </code>
-	*/
-	function AddRole($role='') {
-	--->
+	*/--->
+	<cffunction AddRole($role='')>
+	
+	</cffunction>
+	
 	
 	
 	<!---
@@ -132,9 +138,11 @@
 	* DeleteRole(array('role','role','...'));
 	* ?>
 	* </code>
-	*/
-	function DeleteRole($roles=array()) {
-	--->
+	*/--->
+	<cffunction DeleteRole($roles=array())>
+	
+	</cffunction>
+	
 	
 	
 	<!---
@@ -156,9 +164,11 @@
 	* AssignUser('username', array('role','role','...'));
 	* ?>
 	* </code>
-	*/
-	function AssignUser($user='', $roles=array()) {
-	--->
+	*/--->
+	<cffunction AssignUser($user='', $roles=array())>
+	
+	</cffunction>
+	
 	
 	
 	<!---
@@ -179,10 +189,12 @@
 	* DeassignUser('username', array('role','role','...'));
 	* ?>
 	* </code>
-	*/
-	function DeassignUser($user='', $roles=array()) {
+	*/--->
+	<cffunction DeassignUser($user='', $roles=array())>
 	
-	--->
+	</cffunction>
+	
+	
 	
 	<!---
 	/**
@@ -205,9 +217,11 @@
 	* GrantPermission(array(array('object', 'operation')), role);
 	* ?>
 	* </code>
-	*/
-	function GrantPermission($permission=array(), $role='') {
-	--->
+	*/--->
+	<cffunction GrantPermission($permission=array(), $role='')>
+	
+	</cffunction>
+	
 	
 	<!---
 	/**
@@ -228,10 +242,12 @@
 	* RevokePermission(array(array('object', 'operation')), role);
 	* ?>
 	* </code>
-	*/
-	function RevokePermission($permission=array(), $role='') {
+	*/--->
+	<cffunction RevokePermission($permission=array(), $role='')>
 	
-	--->
+	</cffunction>
+	
+	
 	
 	<!---
 	/**
@@ -256,9 +272,11 @@
 	* CreateSession('user', 'session');
 	* ?>
 	* </code>
-	*/
-	function CreateSession($user='', $session='') {
-	--->
+	*/--->
+	<cffunction CreateSession($user='', $session='')>
+	
+	</cffunction>
+	
 	
 	<!---
 	/**
@@ -277,9 +295,11 @@
 	* DeleteSession(array('session','...'));
 	* ?>
 	* </code>
-	*/
-	function DeleteSession($sessions) {
-	--->
+	*/--->
+	<cffunction DeleteSession($sessions)>
+	
+	</cffunction>
+	
 	
 	<!---
 	/**
@@ -305,9 +325,11 @@
 	* AddActiveRole('username', 'session', array('role','...'));
 	* ?>
 	* </code>
-	*/
-	function AddActiveRole($user='', $session='', $roles=array()) {
-	--->
+	*/--->
+	<cffunction AddActiveRole($user='', $session='', $roles=array())>
+	
+	</cffunction>
+	
 	
 	<!---
 	/**
@@ -330,9 +352,11 @@
 	* DropActiveRole('username', 'session', array('role','...'));
 	* ?>
 	* </code>
-	*/
-	function DropActiveRole($user='', $session='', $roles=array()) {
-	--->
+	*/--->
+	<cffunction DropActiveRole($user='', $session='', $roles=array())>
+	
+	</cffunction>
+	
 	
 	<!---
 	/**
@@ -356,9 +380,11 @@
 	* CheckAccess('session', 'object', 'operation');
 	* ?>
 	* </code>
-	*/
-	function CheckAccess($session='', $object='', $operation='') {
-	--->
+	*/--->
+	<cffunction CheckAccess($session='', $object='', $operation='')>
+	
+	</cffunction>
+	
 	
 	<!---
 	/**
@@ -374,9 +400,11 @@
 	* AssignedUsers('rolename');
 	* ?>
 	* </code>
-	*/
-	function AssignedUsers($role='') {
-	--->
+	*/--->
+	<cffunction AssignedUsers($role='')>
+	
+	</cffunction>
+	
 	
 	<!---
 	/**
@@ -392,8 +420,8 @@
 * AssignedRoles('username');
 * ?>
 * </code>
-*/
-function AssignedRoles($user='') {
+*/--->
+<cffunction AssignedRoles($user='')>
     /* Filter input */
 	  $user = filter_var($user, FILTER_SANITIZE_STRING);
 	  /* Select all roles that are associated with the user */
@@ -405,7 +433,7 @@ function AssignedRoles($user='') {
     /* Execute the query and return the result set */
     return QueryEngine($sql, array(&$user), 's', 0);
 }
---->
+</cffunction>
 
 <!---
 /**
@@ -422,8 +450,8 @@ function AssignedRoles($user='') {
 * RolePermissions('rolename');
 * ?>
 * </code>
-*/ 
-function RolePermissions($role='') {
+*/ --->
+<cffunction RolePermissions($role='')>
     /* Filter input */
 	  $role = filter_var($role, FILTER_SANITIZE_STRING);
 	  /* Select all permissions that are associated with the role */
@@ -436,7 +464,7 @@ function RolePermissions($role='') {
     WHERE role.name = ?';
     return QueryEngine($sql, array(&$role), 's', 0);
 }
---->
+</cffunction>
 
 <!---
 /**
@@ -453,8 +481,8 @@ function RolePermissions($role='') {
 * UserPermissions('username');
 * ?>
 * </code>
-*/
-function UserPermissions($user='') {
+*/--->
+<cffunction UserPermissions($user='')>
     /* Filter input */
     $user = filter_var($user, FILTER_SANITIZE_STRING);
     /* Select all permissions that are associated with a given user */
@@ -466,8 +494,8 @@ function UserPermissions($user='') {
     INNER JOIN user USING (user_id)
     WHERE user.username = ?';
     return QueryEngine($sql, array(&$user), 's', 0);
-}
---->
+</cffunction>
+
 
 <!---
 /**
@@ -484,8 +512,8 @@ function UserPermissions($user='') {
 * SessionRoles('session');
 * ?>
 * </code>
-*/
-function SessionRoles($session='') {
+*/--->
+<cffunction SessionRoles($session='')>
     /* Filter input */
     $session = filter_var($session, FILTER_SANITIZE_STRING, FILTER_FLAG_ENCODE_HIGH|FILTER_FLAG_ENCODE_LOW);
     /* Select all roles that are associated with the active session */
@@ -495,8 +523,8 @@ function SessionRoles($session='') {
     INNER JOIN session USING (session_id)
     WHERE session.name = ?';
     return QueryEngine($sql, array(&$session), 's', 0);
-}
---->
+</cffunction>
+
 
 <!---
 /**
@@ -513,8 +541,8 @@ function SessionRoles($session='') {
 * SessionPermissions('session');
 * ?>
 * </code>
-*/
-function SessionPermissions($session='') {
+*/--->
+<cffunction SessionPermissions($session='')>
     /* Filter input */
     $session = filter_var($session, FILTER_SANITIZE_STRING, FILTER_FLAG_ENCODE_HIGH|FILTER_FLAG_ENCODE_LOW);
     /* Select all permissions that are associated with the active session */
@@ -527,8 +555,8 @@ function SessionPermissions($session='') {
     INNER JOIN session USING (session_id)
     WHERE session.name = ?';
     return QueryEngine($sql, array(&$session), 's', 0);
-}
---->
+</cffunction>
+
 
 <!---
 NON STANDARD API CALLS

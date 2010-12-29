@@ -20,14 +20,6 @@
 	# See the License for the specific language governing permissions and
 	# limitations under the License.
 	##########################################################
-	
-	A note from the author 
-	
-	If you use this code in your project, please let me know so I can get a feel for what kinds ways people are utilizing this tool.
-	
-	Sincerely,
-	Joshua F. Rountree
-	
 	--->
 	
 	<cffunction name="init" access="public" returntype="rbac" hint="instantiates the rbac system">

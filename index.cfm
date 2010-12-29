@@ -6,7 +6,7 @@
 </head>
 
 <body>
-	<cfset RBAC = createObject("component","rbac").init(datasource="CCPD_PROD",tableprefix="ac_",dbms="mssql",usertable="ce_person",username_col="email",password_col="password")>
-	<cfdump var="#RBAC#">
+	<cfdump var="#application.rbac#">
+	<cfabort>
 </body>
 </html>

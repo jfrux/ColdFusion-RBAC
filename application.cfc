@@ -52,6 +52,18 @@
 			type="string"
 			required="true"
 			/>
+		
+		<!--- cache library --->
+		<cfif NOT structKeyExists(application,'org') OR structKeyExists(url,'reinit')>
+			<cflock scope="application" type="exclusive" timeout="30">
+				<cfset application.rbac = structNew() />
+				
+				<!--- CONFIGURATION --->
+				<cfinclude template="/rbac/config.cfm" />
+				
+				<cfset application.rbac = createObject("component","rbac.rbac").init(argumentCollection=request.rbacConfig) />
+			</cflock>
+		</cfif>
  
 		<!--- Return out. --->
 		<cfreturn true />
@@ -112,7 +124,7 @@
 	</cffunction>
  
  
-	<cffunction
+	<!---<cffunction
 		name="OnError"
 		access="public"
 		returntype="void"
@@ -133,6 +145,6 @@
 			/>
  
 		<cfreturn />
-	</cffunction>
+	</cffunction>--->
  
 </cfcomponent>

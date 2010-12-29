@@ -1,20 +1,19 @@
-# NIST Core RBAC library
-# @package NIST RBAC
-# @author Joshua F. Rountree (joshua@swodev.com)
-# @version 0.01
+ColdFusion RBAC CFC
 
-##########################################################
-# Copyright 2010 Joshua F. Rountree
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#   http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-##########################################################
+## INSTALLATION ##
+
+I. Installing the test environment
+	- coming soon
+
+II. Implementing RBAC CFC
+	- Copy the 'rbac' directory to your webroot.
+	- Create a server mapping to /rbac to your <webroot>\rbac\ folder
+	- Modify the /rbac/config.cfm to fit your needs.
+	- INCLUDE the following code in your application init area:
+		<cfif NOT structKeyExists(application,rbac)>
+		<cflock scope="application" type="exclusive" timeout="30">
+		<!--- RBAC --->
+		<cfinclude template="/rbac/config.cfm" />
+		<cfset application.rbac = createObject("component","rbac.rbac").init(request.rbacConfig) />
+		</cflock>
+		</cfif>

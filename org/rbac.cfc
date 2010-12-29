@@ -71,7 +71,10 @@
 		<cfargument name="last_name" type="string" required="no" />
 		<cfargument name="email" type="string" required="no" />
 		
+		<!---
+		PHP Code:
 		
+		--->
 	</cffunction>
 	
 	
@@ -92,6 +95,10 @@
 	<cffunction name="DeleteUser" access="public" output="no" returntype="any">
 		<cfargument name="users" type="array" required="yes" />
 		
+		<!---
+		PHP Code:
+		
+		--->
 	</cffunction>
 	
 	
@@ -118,7 +125,10 @@
 		<cfargument name="name" type="string" required="yes" />
 		<cfargument name="description" type="string" required="no" default="" />
 
+		<!---
+		PHP Code:
 		
+		--->
 	</cffunction>
 	
 	
@@ -143,7 +153,11 @@
 	*/--->
 	<cffunction name="DeleteRole" access="public" output="no" returntype="any">
 		<cfargument name="roles" type="array" required="yes" />
-	
+		
+		<!---
+		PHP Code:
+		
+		--->
 	</cffunction>
 	
 	
@@ -171,7 +185,11 @@
 	<cffunction name="AssignUser" access="public" output="no" returntype="any">
 		<cfargument name="user" type="numeric" required="yes" />
 		<cfargument name="roles" type="array" required="yes" />
-	
+		
+		<!---
+		PHP Code:
+		
+		--->
 	</cffunction>
 	
 	
@@ -198,7 +216,11 @@
 	<cffunction name="DeassignUser" access="public" output="no" returntype="any">
 		<cfargument name="user" type="numeric" required="yes" />
 		<cfargument name="roles" type="array" required="yes" />
-	
+		
+		<!---
+		PHP Code:
+		
+		--->
 	</cffunction>
 
 	<!---
@@ -226,7 +248,13 @@
 	<cffunction name="GrantPermission" access="public" output="no" returntype="any">
 		<cfargument name="permissions" type="array" required="yes" />
 		<cfargument name="role" type="numeric" required="yes" />
-	
+		
+		
+		
+		<!---
+		PHP Code:
+		
+		--->
 	</cffunction>
 	
 	
@@ -253,7 +281,12 @@
 	<cffunction name="RevokePermission" access="public" output="no" returntype="any">
 		<cfargument name="permissions" type="array" required="yes" />
 		<cfargument name="role" type="numeric" required="no" />
-
+		
+		<!---
+		PHP Code:
+		
+		--->
+		
 	</cffunction>
 	
 	
@@ -285,7 +318,12 @@
 	<cffunction name="CreateSession" access="public" output="no" returntype="any">
 		<cfargument name="user" type="numeric" required="yes" />
 		<cfargument name="session" type="string" required="yes" />
-
+		
+		<!---
+		PHP Code:
+		
+		--->
+		
 	</cffunction>
 	
 	
@@ -309,7 +347,12 @@
 	*/--->
 	<cffunction name="DeleteSession" access="public" output="no" returntype="any">
 		<cfargument name="sessions" type="array" required="yes" />
-	
+		
+		<!---
+		PHP Code:
+		
+		--->
+		
 	</cffunction>
 	
 	
@@ -342,7 +385,12 @@
 		<cfargument name="user" type="numeric" required="yes" />
 		<cfargument name="session" type="string" required="yes" />
 		<cfargument name="roles" type="array" required="yes" />
-	
+		
+		<!---
+		PHP Code:
+		
+		--->
+		
 	</cffunction>
 	
 	
@@ -372,7 +420,12 @@
 		<cfargument name="user" type="numeric" required="yes" />
 		<cfargument name="session" type="string" required="yes" />
 		<cfargument name="roles" type="array" required="yes" />
-	
+		
+		<!---
+		PHP Code:
+		
+		--->
+		
 	</cffunction>
 	
 	
@@ -404,6 +457,10 @@
 		<cfargument name="object" type="string" required="yes" />
 		<cfargument name="operation" type="string" required="yes" />
 		
+		<!---
+		PHP Code:
+		
+		--->
 		
 	</cffunction>
 	
@@ -427,6 +484,11 @@
 		<cfargument name="role" type="numeric" required="yes" />
 		
 		
+		<!---
+		PHP Code:
+		
+		--->
+		
 	</cffunction>
 	
 	
@@ -447,20 +509,22 @@
 	*/--->
 	<cffunction name="AssignedRoles" access="public" output="no" returntype="any">
 		<cfargument name="user" type="numeric" required="yes" />
-	
-	
-	<!---($user='')>
-		/* Filter input */
-		  $user = filter_var($user, FILTER_SANITIZE_STRING);
-		  /* Select all roles that are associated with the user */
-		$sql = 'SELECT DISTINCT role.name AS Role
-		FROM user
-		INNER JOIN user_role USING (user_id)
-		INNER JOIN role USING (role_id)
-		WHERE user.username = ?';
-		/* Execute the query and return the result set */
-		return QueryEngine($sql, array(&$user), 's', 0);
-	}--->
+		
+		
+		<!---
+			PHP Code:
+			($user='')>
+			/* Filter input */
+			  $user = filter_var($user, FILTER_SANITIZE_STRING);
+			  /* Select all roles that are associated with the user */
+			$sql = 'SELECT DISTINCT role.name AS Role
+			FROM user
+			INNER JOIN user_role USING (user_id)
+			INNER JOIN role USING (role_id)
+			WHERE user.username = ?';
+			/* Execute the query and return the result set */
+			return QueryEngine($sql, array(&$user), 's', 0);
+		}--->
 	</cffunction>
 
 	<!---
@@ -482,19 +546,21 @@
 	<cffunction name="RolePermissions" access="public" output="no" returntype="any">
 		<cfargument name="role" type="numeric" required="yes" />
 	
-	<!---($role='')>
-		/* Filter input */
-		  $role = filter_var($role, FILTER_SANITIZE_STRING);
-		  /* Select all permissions that are associated with the role */
-		$sql = 'SELECT DISTINCT permission.name AS Permission, object.name AS Object, operation.name AS Operation
-		FROM permission
-		INNER JOIN object USING (object_id)
-		INNER JOIN operation USING (operation_id)
-		INNER JOIN role_permission USING (permission_id)
-		INNER JOIN role USING (role_id)
-		WHERE role.name = ?';
-		return QueryEngine($sql, array(&$role), 's', 0);
-	}--->
+		<!---
+			PHP Code:
+			($role='')>
+			/* Filter input */
+			  $role = filter_var($role, FILTER_SANITIZE_STRING);
+			  /* Select all permissions that are associated with the role */
+			$sql = 'SELECT DISTINCT permission.name AS Permission, object.name AS Object, operation.name AS Operation
+			FROM permission
+			INNER JOIN object USING (object_id)
+			INNER JOIN operation USING (operation_id)
+			INNER JOIN role_permission USING (permission_id)
+			INNER JOIN role USING (role_id)
+			WHERE role.name = ?';
+			return QueryEngine($sql, array(&$role), 's', 0);
+		}--->
 	</cffunction>
 	
 	<!---
@@ -516,7 +582,10 @@
 	<cffunction name="UserPermissions" access="public" output="no" returntype="any">
 		<cfargument name="user" type="numeric" required="yes" />
 		
-		<!---($user='')>
+		<!---
+		PHP Code:
+		
+		($user='')>
 		/* Filter input */
 		$user = filter_var($user, FILTER_SANITIZE_STRING);
 		/* Select all permissions that are associated with a given user */
@@ -550,7 +619,10 @@
 	<cffunction name="SessionRoles" access="public" output="no" returntype="any">
 		<cfargument name="session" type="string" required="yes" />
 		
-		<!---($session='')>
+		<!---
+		PHP Code:
+		
+		($session='')>
 		/* Filter input */
 		$session = filter_var($session, FILTER_SANITIZE_STRING, FILTER_FLAG_ENCODE_HIGH|FILTER_FLAG_ENCODE_LOW);
 		/* Select all roles that are associated with the active session */
@@ -582,7 +654,9 @@
 	<cffunction name="SessionPermissions" access="public" output="no" returntype="any">
 		<cfargument name="session" type="string" required="yes" />
 		
-		<!---($session='')>
+		<!---
+		PHP Code:
+		
 		/* Filter input */
 		$session = filter_var($session, FILTER_SANITIZE_STRING, FILTER_FLAG_ENCODE_HIGH|FILTER_FLAG_ENCODE_LOW);
 		/* Select all permissions that are associated with the active session */
@@ -645,7 +719,10 @@
 		<cfargument name="object" type="numeric" required="yes" />
 		<cfargument name="operation" type="numeric" required="yes" />
 		
-	
+		<!---
+		PHP Code:
+		
+		--->
 	</cffunction>
 	
 	
@@ -666,7 +743,10 @@
 	<cffunction name="DeletePermission" access="public" output="no" returntype="any">
 		<cfargument name="permissions" type="array" required="no" />
 		
+		<!---
+		PHP Code:
 		
+		--->
 	</cffunction>
 		
 	
@@ -690,7 +770,10 @@
 		<cfargument name="object" type="numeric" required="yes" />
 		<cfargument name="locked" type="boolean" required="no" default="false" />
 		
+		<!---
+		PHP Code:
 		
+		--->
 	</cffunction>
 	   
 	
@@ -713,7 +796,10 @@
 	<cffunction name="DeleteObject" access="public" output="no" returntype="any">
 		<cfargument name="objects" type="array" required="yes" hint="array of object id's" />
 		
+		<!---
+		PHP Code:
 		
+		--->
 	</cffunction>
 	
 	<!---
@@ -737,7 +823,10 @@
 		<cfargument name="mask" type="string" required="no" default="0000" hint="0000 - 1111 representing create,read,update,delete" />
 		<cfargument name="locked" type="boolean" required="no" default="0" />
 		
+		<!---
+		PHP Code:
 		
+		--->
 	</cffunction>
 	
 	<!---
